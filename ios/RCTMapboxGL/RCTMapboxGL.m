@@ -625,7 +625,7 @@
 	MGLCoordinateBounds newVisibleCoordinates = mapView.visibleCoordinateBounds;
 	
 	// Set the restricting bounds
-	MGLCoordinateBounds bounds = MGLCoordinateBoundsMake(_maxBoundsSouthWest, _maxBoundsNorthEast)
+	MGLCoordinateBounds bounds = MGLCoordinateBoundsMake(_maxBoundsSouthWest, _maxBoundsNorthEast);
 	
 	// Revert the camera.
 	mapView.camera = currentCamera;

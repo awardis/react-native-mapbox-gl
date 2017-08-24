@@ -308,11 +308,11 @@ class MapView extends Component {
       latitude: PropTypes.number.isRequired,
       longitude: PropTypes.number.isRequired
     }),
-    maxBoundsSouthWest: PropTypes.shape({
+    maxBoundsSouthEast: PropTypes.shape({
         latitude: PropTypes.number.isRequired,
         longitude: PropTypes.number.isRequired
     }),
-    maxBoundsNorthEast: PropTypes.shape({
+    maxBoundsNorthWest: PropTypes.shape({
         latitude: PropTypes.number.isRequired,
         longitude: PropTypes.number.isRequired
     }),
