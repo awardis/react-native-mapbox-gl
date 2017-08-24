@@ -38,6 +38,8 @@ RCT_EXPORT_MODULE();
 // Props
 
 RCT_EXPORT_VIEW_PROPERTY(initialCenterCoordinate, CLLocationCoordinate2D);
+RCT_EXPORT_VIEW_PROPERTY(maxBoundsSouthEast, CLLocationCoordinate2D);
+RCT_EXPORT_VIEW_PROPERTY(maxBoundsNorthWest, CLLocationCoordinate2D);
 RCT_EXPORT_VIEW_PROPERTY(initialZoomLevel, double);
 RCT_EXPORT_VIEW_PROPERTY(initialDirection, double);
 RCT_EXPORT_VIEW_PROPERTY(clipsToBounds, BOOL);

@@ -24,6 +24,8 @@
     /* Map properties */
     NSMutableDictionary *_annotations;
     CLLocationCoordinate2D _initialCenterCoordinate;
+	CLLocationCoordinate2D _maxBoundsNorthEast;
+	CLLocationCoordinate2D _maxBoundsSouthWest;
     double _initialDirection;
     double _initialZoomLevel;
     BOOL _zoomEnabled;
@@ -311,6 +313,16 @@
     _initialCenterCoordinate = centerCoordinate;
 }
 
+- (void)setMaxBoundsSouthWest:(CLLocationCoordinate2D)maxBoundsSouthWest
+{
+	_maxBoundsSouthWest = maxBoundsSouthWest;
+}
+
+- (void)setMaxBoundsNorthEast:(CLLocationCoordinate2D)maxBoundsNorthEast
+{
+	_maxBoundsNorthEast = maxBoundsNorthEast;
+}
+
 - (void)setInitialZoomLevel:(double)zoomLevel
 {
     _initialZoomLevel = zoomLevel;
@@ -596,6 +608,33 @@
                                       @"direction": @(_map.direction),
                                       @"pitch": @(_map.camera.pitch),
                                       @"animated": @(animated) } });
+}
+
+- (BOOL)mapView:(MGLMapView *)mapView shouldChangeFromCamera:(MGLMapCamera *)oldCamera toCamera:(MGLMapCamera *)newCamera
+{
+	RCTLog(@"Restricting bounds");
+	
+	// Get the current camera to restore it after.
+	MGLMapCamera *currentCamera = mapView.camera;
+	
+	// From the new camera obtain the center to test if it’s inside the boundaries.
+	CLLocationCoordinate2D newCameraCenter = newCamera.centerCoordinate;
+	
+	// Set the map’s visible bounds to newCamera.
+	mapView.camera = newCamera;
+	MGLCoordinateBounds newVisibleCoordinates = mapView.visibleCoordinateBounds;
+	
+	// Set the restricting bounds
+	MGLCoordinateBounds bounds = MGLCoordinateBoundsMake(_maxBoundsSouthWest, _maxBoundsNorthEast)
+	
+	// Revert the camera.
+	mapView.camera = currentCamera;
+	
+	// Test if the newCameraCenter and newVisibleCoordinates are inside bounds.
+	BOOL inside = MGLCoordinateInCoordinateBounds(newCameraCenter, bounds);
+	BOOL intersects = MGLCoordinateInCoordinateBounds(newVisibleCoordinates.ne, bounds) && MGLCoordinateInCoordinateBounds(newVisibleCoordinates.sw, bounds);
+	
+	return inside && intersects;
 }
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)sender

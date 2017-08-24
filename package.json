@@ -38,8 +38,8 @@
     "lodash": "^4.13.1"
   },
   "peerDependencies": {
+    "prop-types": ">=15.5.8",
     "react": ">=15.4.0",
-    "react-native": ">=0.44.3",
-    "prop-types": ">=15.5.8"
+    "react-native": ">=0.44.3"
   }
 }

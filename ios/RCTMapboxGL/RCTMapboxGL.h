@@ -17,6 +17,8 @@
 
 // React props
 - (void)setInitialCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate;
+- (void)setMaxBoundsNorthEast:(CLLocationCoordinate2D)maxBoundsNorthEast;
+- (void)setMaxBoundsSouthWest:(CLLocationCoordinate2D)maxBoundsSouthWest;
 - (void)setInitialZoomLevel:(double)zoomLevel;
 - (void)setInitialDirection:(double)direction;
 - (void)setClipsToBounds:(BOOL)clipsToBounds;
