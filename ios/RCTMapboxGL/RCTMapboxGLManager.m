@@ -38,8 +38,8 @@ RCT_EXPORT_MODULE();
 // Props
 
 RCT_EXPORT_VIEW_PROPERTY(initialCenterCoordinate, CLLocationCoordinate2D);
-RCT_EXPORT_VIEW_PROPERTY(maxBoundsSouthEast, CLLocationCoordinate2D);
-RCT_EXPORT_VIEW_PROPERTY(maxBoundsNorthWest, CLLocationCoordinate2D);
+RCT_EXPORT_VIEW_PROPERTY(maxBoundsNorthEast, CLLocationCoordinate2D);
+RCT_EXPORT_VIEW_PROPERTY(maxBoundsSouthWest, CLLocationCoordinate2D);
 RCT_EXPORT_VIEW_PROPERTY(initialZoomLevel, double);
 RCT_EXPORT_VIEW_PROPERTY(initialDirection, double);
 RCT_EXPORT_VIEW_PROPERTY(clipsToBounds, BOOL);
@@ -71,6 +71,7 @@ RCT_EXPORT_VIEW_PROPERTY(onLongPress, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onFinishLoadingMap, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onStartLoadingMap, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLocateUserFailed, RCTDirectEventBlock);
+
 
 RCT_CUSTOM_VIEW_PROPERTY(contentInset, UIEdgeInsetsMake, RCTMapboxGL)
 {

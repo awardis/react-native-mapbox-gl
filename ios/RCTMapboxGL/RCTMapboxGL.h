@@ -58,6 +58,8 @@
 - (double)pitch;
 - (MGLMapCamera*)camera;
 - (CLLocationCoordinate2D)centerCoordinate;
+- (CLLocationCoordinate2D)maxBoundsNorthEast;
+- (CLLocationCoordinate2D)maxBoundsSouthWest;
 
 // Events
 @property (nonatomic, copy) RCTDirectEventBlock onRegionDidChange;
