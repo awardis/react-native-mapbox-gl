@@ -85,8 +85,6 @@
     UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTap.delegate = self;
     [_map addGestureRecognizer:singleTap];
-	
-	RCTLog(@"Initial max bounds NE: [%f, %f]", _maxBoundsNorthEast.latitude, _maxBoundsNorthEast.longitude);
 
     _map.centerCoordinate = _initialCenterCoordinate;
     _map.clipsToBounds = _clipsToBounds;
@@ -312,19 +310,16 @@
 
 - (void)setInitialCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
 {
-	RCTLog(@"Setting initial center: [%f, %f]", centerCoordinate.latitude, centerCoordinate.longitude);
     _initialCenterCoordinate = centerCoordinate;
 }
 
 - (void)setMaxBoundsSouthWest:(CLLocationCoordinate2D)maxBoundsSouthWest
 {
-	RCTLog(@"Setting max bounds SW: [%f, %f]", maxBoundsSouthWest.latitude, maxBoundsSouthWest.longitude);
 	_maxBoundsSouthWest = maxBoundsSouthWest;
 }
 
 - (void)setMaxBoundsNorthEast:(CLLocationCoordinate2D)maxBoundsNorthEast
 {
-	RCTLog(@"Setting max bounds NE: [%f, %f]", maxBoundsNorthEast.latitude, maxBoundsNorthEast.longitude);
 	_maxBoundsNorthEast = maxBoundsNorthEast;
 }
 
@@ -474,14 +469,6 @@
     return _map.centerCoordinate;
 }
 
--(CLLocationCoordinate2D)maxBoundsNorthEast {
-	return _maxBoundsNorthEast;
-}
-
--(CLLocationCoordinate2D)maxBoundsSouthWest {
-	return _maxBoundsSouthWest;
-}
-
 -(double)direction {
     if (!_map) { return _initialDirection; }
     return _map.direction;
@@ -625,9 +612,6 @@
 
 - (BOOL)mapView:(MGLMapView *)mapView shouldChangeFromCamera:(MGLMapCamera *)oldCamera toCamera:(MGLMapCamera *)newCamera
 {
-	RCTLog(@"Restricting bounds");
-	RCTLog(@"%f", _maxBoundsNorthEast.latitude);
-	
 	// Get the current camera to restore it after.
 	MGLMapCamera *currentCamera = mapView.camera;
 	

@@ -72,7 +72,6 @@ RCT_EXPORT_VIEW_PROPERTY(onFinishLoadingMap, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onStartLoadingMap, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLocateUserFailed, RCTDirectEventBlock);
 
-
 RCT_CUSTOM_VIEW_PROPERTY(contentInset, UIEdgeInsetsMake, RCTMapboxGL)
 {
     int top = [json[0] doubleValue];
