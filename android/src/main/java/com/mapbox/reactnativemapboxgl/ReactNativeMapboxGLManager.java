@@ -197,6 +197,20 @@ public class ReactNativeMapboxGLManager extends ViewGroupManager<ReactNativeMapb
         view.setInitialCenterCoordinate(lat, lon);
     }
 
+    @ReactProp(name = "maxBoundsNorthEast")
+    public void setMaxBoundsNorthEast(ReactNativeMapboxGLView view, ReadableMap coord) {
+        double lat = coord.getDouble("latitude");
+        double lon = coord.getDouble("longitude");
+        view.setMaxBoundsNorthEast(lat, lon);
+    }
+
+    @ReactProp(name = "maxBoundsSouthWest")
+    public void setMaxBoundsSouthWest(ReactNativeMapboxGLView view, ReadableMap coord) {
+        double lat = coord.getDouble("latitude");
+        double lon = coord.getDouble("longitude");
+        view.setMaxBoundsSouthWest(lat, lon);
+    }
+
     @ReactProp(name = "enableOnRegionDidChange")
     public void setEnableOnRegionDidChange(ReactNativeMapboxGLView view, boolean value) {
         view.setEnableOnRegionDidChange(value);

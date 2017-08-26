@@ -28,6 +28,7 @@ import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import com.mapbox.mapboxsdk.geometry.VisibleRegion;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
@@ -48,7 +49,8 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
         MapboxMap.OnMyBearingTrackingModeChangeListener, MapboxMap.OnMyLocationTrackingModeChangeListener,
         MapboxMap.OnMyLocationChangeListener,
         MapboxMap.OnMarkerClickListener, MapboxMap.OnInfoWindowClickListener,
-        MapView.OnMapChangedListener, ReactNativeMapboxGLManager.ChildListener
+        MapView.OnMapChangedListener, ReactNativeMapboxGLManager.ChildListener,
+        MapboxMap.OnScrollListener, MapboxMap.OnFlingListener, MapboxMap.OnCameraChangeListener
 {
 
     private MapboxMap _map = null;
@@ -76,6 +78,9 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
     private boolean _willChangeThrottled = false;
     private boolean _didChangeThrottled = false;
     private boolean _changeWasAnimated = false;
+    private LatLng _maxBoundsNorthEast;
+    private LatLng _maxBoundsSouthWest;
+    private CameraPosition _previousPosition;
 
     private Map<String, Annotation> _annotations = new HashMap<>();
     private Map<Long, String> _annotationIdsToName = new HashMap<>();
@@ -149,6 +154,71 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
         _mapView.getMapAsync(this);
     }
 
+    public void easeCameraBackToBoundingBox(LatLngBounds bounds) {
+        if (_map == null || this._previousPosition == null) { return; }
+
+        _map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0), 100);
+    }
+
+    public void restrictMapToBoundingBox() {
+        VisibleRegion visibleRegion = _map.getProjection().getVisibleRegion();
+
+        Double maxLat = this._maxBoundsNorthEast.getLatitude();
+        Double maxLng = this._maxBoundsNorthEast.getLongitude();
+        Double minLat = this._maxBoundsSouthWest.getLatitude();
+        Double minLng = this._maxBoundsSouthWest.getLongitude();
+
+        boolean shouldEaseBack = false;
+        Double newMaxLat = visibleRegion.farRight.getLatitude();
+        Double newMaxLng = visibleRegion.farRight.getLongitude();
+        Double newMinLat = visibleRegion.nearLeft.getLatitude();
+        Double newMinLng = visibleRegion.nearLeft.getLongitude();
+
+        if (newMaxLat > maxLat) {
+            newMaxLat = maxLat;
+            shouldEaseBack = true;
+        }
+
+        if (newMaxLng > maxLng) {
+            newMaxLng = maxLng;
+            shouldEaseBack = true;
+        }
+
+        if (newMinLat < minLat) {
+            newMinLat = minLat;
+            shouldEaseBack = true;
+        }
+
+        if (newMinLng < minLng) {
+            newMinLng = minLng;
+            shouldEaseBack = true;
+        }
+
+        if (shouldEaseBack) {
+            LatLngBounds bounds = new LatLngBounds.Builder()
+                    .include(new LatLng(newMaxLat, newMaxLng))
+                    .include(new LatLng(newMinLat, newMinLng))
+                    .build();
+
+            this.easeCameraBackToBoundingBox(bounds);
+        }
+    }
+
+    @Override
+    public void onFling() {
+        this.restrictMapToBoundingBox();
+    }
+
+    @Override
+    public void onScroll() {
+        this.restrictMapToBoundingBox();
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition position) {
+        //this._previousPosition = position;
+    }
+
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
         if (_mapView == null) { return; }
@@ -161,6 +231,9 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
         _map.setPadding(_paddingLeft, _paddingTop, _paddingRight, _paddingBottom);
         _map.setMinZoom(_minimumZoomLevel);
         _map.setMaxZoom(_maximumZoomLevel);
+
+        // Set the current position as previous position
+        this._previousPosition = _map.getCameraPosition();
 
         UiSettings uiSettings = _map.getUiSettings();
         uiSettings.setZoomGesturesEnabled(_zoomEnabled);
@@ -194,6 +267,9 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
         _map.setOnMyLocationChangeListener(this);
         _map.setOnMarkerClickListener(this);
         _map.setOnInfoWindowClickListener(this);
+        _map.setOnFlingListener(this);
+        _map.setOnScrollListener(this);
+        _map.setOnCameraChangeListener(this);
 
         // Create annotations
         for (Map.Entry<String, RNMGLAnnotationOptions> entry : _annotationOptions.entrySet()) {
@@ -302,6 +378,14 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
 
     public void setInitialCenterCoordinate(double lat, double lon) {
         _initialCamera.target(new LatLng(lat, lon));
+    }
+
+    public void setMaxBoundsNorthEast(double lat, double lon) {
+        this._maxBoundsNorthEast = new LatLng(lat, lon);
+    }
+
+    public void setMaxBoundsSouthWest(double lat, double lon) {
+        this._maxBoundsSouthWest = new LatLng(lat, lon);
     }
 
     public void setEnableOnRegionDidChange(boolean value) {
@@ -456,6 +540,8 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
 
     @Override
     public void onMapClick(LatLng point) {
+        this._previousPosition = _map.getCameraPosition();
+
         emitEvent(ReactNativeMapboxGLEventTypes.ON_TAP, serializePoint(point));
     }
 
